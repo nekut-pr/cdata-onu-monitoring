@@ -111,7 +111,7 @@ sub add {
     my $signal      = $h{signal};
     my $olt_count =
       $dbh->selectrow_array("SELECT Count(number) FROM olt_$ip WHERE number = ?", undef, $mac_port);
-    if ($olt_count < 0) {
+    unless ($olt_count > 0) {
         $dbh->do("INSERT INTO olt_$ip VALUES(?, ?, ?, '','','');", undef, $mac_port, $signal, $mac);
     }
 }
