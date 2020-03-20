@@ -28,3 +28,8 @@ Alias /cdata/ "/var/www/cdata/"
        AllowOverride All
 </Directory>
 ```
+Создать таблицу свитчей Cdata
+===========
+```
+CREATE TABLE olttest(ip int(16) unsigned, name varchar(60));
+```
