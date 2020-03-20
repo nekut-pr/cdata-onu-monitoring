@@ -11,8 +11,8 @@ Alias /cdata/ "/var/www/cdata/"
 
 <VirtualHost *:80>
         DocumentRoot "/var/www/cdata/"
-        ServerName  cdata.domen.org
-        ServerAlias www.cdata.domen.org
+        ServerName  cdata.domain.org
+        ServerAlias www.cdata.domain.org
         ErrorLog ${APACHE_LOG_DIR}/error_cdata.log
         CustomLog ${APACHE_LOG_DIR}/access_cdata.log combined
         Alias /cdata/ "/var/www/cdata/"
