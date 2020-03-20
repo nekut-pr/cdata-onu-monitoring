@@ -31,5 +31,5 @@ Alias /cdata/ "/var/www/cdata/"
 Создать таблицу свитчей Cdata
 ===========
 ```
-CREATE TABLE olttest(ip int(16) unsigned, name varchar(60));
+CREATE TABLE olt(ip int(16) unsigned, name varchar(60));
 ```
