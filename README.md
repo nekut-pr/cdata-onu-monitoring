@@ -33,4 +33,4 @@ Alias /cdata/ "/var/www/cdata/"
 ```
 CREATE TABLE olt(ip int(16) unsigned, name varchar(60));
 ```
-![image alt text](https://www.youtube.com/watch?v=TDsZvjGFlAk)
+![Cdata Onu Monitoring](https://img.youtube.com/vi/RHPYGwVQB2o/0.jpg)](https://www.youtube.com/watch?v=EVFTpBVuCdQ)
