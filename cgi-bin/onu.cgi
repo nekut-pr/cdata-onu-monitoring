@@ -54,6 +54,9 @@ sub olt($) {
             elsif ($_ >= -26 && $_ <= -25){
                 print "<td><font color=\"#ff8000\">", $signal,"</font></td>"; 
             }
+            elsif ($_ == ''){
+                print "<td><font color=\"red\">Offline</font></td>"; 
+            }
             else {
                 print "<td><font color=\"red\">", $signal,"</font></td>";
             }
