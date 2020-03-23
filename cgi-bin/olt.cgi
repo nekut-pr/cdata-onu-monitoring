@@ -7,7 +7,7 @@ use utf8;
 binmode(STDOUT,':utf8');
 use POSIX;
 
-my $cgi = new CGI;
+my $cgi = new CGI; 
 my $source = "DBI:mysql:cdata:localhost";
 my $username = "cdata";
 my $password = "cdata";
@@ -32,27 +32,37 @@ olt($olt_ip[0]);
 sub olt($) {
     my $x = shift;
     my $ip = unpack("N",pack("C4",split(/\./,$x)));
-    $sth = $dbc->prepare("select number, sugnal, mac, address from olt_$ip;");
+    $sth = $dbc->prepare("select number, sugnal, mac, address from olt_$ip order by number;");
     $sth->execute;
     print "<h3 align=\"center\">$x</h3>";
     print qq'
     <table border="1"><th>Номер порта</th><th>MAC</th><th>Сигнал</th><th>Описание</th><tr></tr>';
     while (my $ref = $sth->fetchrow_hashref()) {
-        my $query = $ENV{'QUERY_STRING'};
+        my $query = $ENV{'QUERY_STRING'};        
         print "<tr onclick=\"document.location = 'onu.cgi?$query&$ref->{'number'}'\" >";
-        my $port = $ref->{'number'};
+        my $port = $ref->{'number'};  
         for ($port){
             my ($v, $p) = (floor($_/256) % 256 - 10, $_ % 64);
             print  "<td><b>",$v,"/",$p,"</b><br><small>",$port,"</small></td>";
         }
-        print "<td>", $ref->{'mac'},"</td>";
-        print "<td>", $ref->{'sugnal'},"</td>";
-
-        print "<td><font color=\"blue\">", $ref->{'address'},"</font><br><small>А81151-1907000452</small></td>";
-        print "</tr>";
+        print "<td>", $ref->{'mac'},"</td>"; 
+        my $signal = $ref->{'sugnal'};
+        for ($signal){
+            if ($_ >= -24.9 && $_ <= -8){
+                print "<td><font color=\"green\">", $signal,"</font></td>"; 
+            }
+            elsif ($_ >= -26 && $_ <= -25){
+                print "<td><font color=\"#ff8000\">", $signal,"</font></td>"; 
+            }
+            elsif ($_ >= -27 ){
+                print "<td><font color=\"red\">", $signal,"</font></td>"; 
+            }
+        }
+        print "<td><font color=\"blue\">", $ref->{'address'},"</font><br><small></small></td>";
+        print "</tr>"; 
     }
     print qq'</table>';
 }
 
-$sth->finish;
+$sth->finish;    
 $dbc->disconnect;
