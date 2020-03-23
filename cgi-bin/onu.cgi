@@ -11,8 +11,8 @@ my $cgi = new CGI;
 my $source = "DBI:mysql:cdata:localhost";
 my $username = "cdata";
 my $password = "cdata";
-my $dbh = DBI->connect($source, $username, $password, {mysql_enable_utf8 => 1});
-$dbh->do("set names utf8");
+my $dbc = DBI->connect($source, $username, $password, {mysql_enable_utf8 => 1});
+$dbc->do("set names utf8");
 
 print $cgi->header(
     -charset=>'UTF-8'
@@ -23,26 +23,29 @@ print $cgi->start_html(
     -style=>{'src'=>'/cdata/style.css'}
 );
 
-print qq'<div class="block-round-content"><a href="index.cgi">Панель управления Cdata</a></div>';
+print qq'<div class="block-round-content"><a href="index.cgi">Панель управления Cdata</a> </div>';
 
 my $sth;
 my @olt_ip = split( /\&/, $ENV{'QUERY_STRING'});
-olt($olt_ip[0], $olt_ip[1]);
+olt($olt_ip[0]);
 
 sub olt($) {
     my $x = shift;
-    my $y = shift;
     my $ip = unpack("N",pack("C4",split(/\./,$x)));
-    $sth = $dbh->prepare("SELECT number, sugnal, mac, address, voltage, serial  FROM olt_$ip WHERE number=$y;");
+    $sth = $dbc->prepare("select number, sugnal, mac, address, serial from olt_$ip order by number;");
     $sth->execute;
-    print qq'<table border=1><tr><th>Ветка/Порт</th><th>Сигнал</th><th>MAC</th><th>Адрес</th><th>Серийный номер</th><th>Напряжение</th></tr>';
+    print "<h3 align=\"center\">$x</h3> <p align=\"center\">ОПРОСИТЬ OLT</p>";
+    print qq'
+    <table border="1"><th>Номер порта</th><th>MAC</th><th>Сигнал</th><th>Описание</th><tr></tr>';
     while (my $ref = $sth->fetchrow_hashref()) {
-        print "<tr>";
-        my $port = $ref->{'number'};
+        my $query = $ENV{'QUERY_STRING'};        
+        print "<tr onclick=\"document.location = 'onu.cgi?$query&$ref->{'number'}'\" >";
+        my $port = $ref->{'number'};  
         for ($port){
             my ($v, $p) = (floor($_/256) % 256 - 10, $_ % 64);
             print  "<td><b>",$v,"/",$p,"</b><br><small>",$port,"</small></td>";
         }
+        print "<td>", $ref->{'mac'},"</td>"; 
         my $signal = $ref->{'sugnal'};
         for ($signal){
             if ($_ >= -24.9 && $_ <= -8){
@@ -51,60 +54,15 @@ sub olt($) {
             elsif ($_ >= -26 && $_ <= -25){
                 print "<td><font color=\"#ff8000\">", $signal,"</font></td>"; 
             }
-            elsif ($_ >= -27){
-                print "<td><font color=\"red\">", $signal,"</font></td>"; 
+            else {
+                print "<td><font color=\"red\">", $signal,"</font></td>";
             }
         }
-        print "<td>", $ref->{'mac'},"</td>"; 
-        print   "<td>", 
-                    $ref->{'address'},"<br>
-                    <span style=\"font-size: 15px;\">
-                        <a href=\"onu.cgi?$x&$y&edit-address\">Редактировать</a>
-                    </span>
-                </td>"; 
-        print   "<td>", 
-                    $ref->{'serial'},"<br>
-                    <span style=\"font-size: 15px;\">
-                        <a href=\"onu.cgi?$x&$y&edit-serial\">Изменить</a>
-                    </span>
-                </td>";                
-        print "<td></td>";
-    }   
-}
-
-my @edit = split( /\&/, $ENV{'QUERY_STRING'});
-edit_address($edit[0], $edit[1], $edit[2]);
-
-sub edit_address($) {
-    my $ip = shift;
-    my $onu = shift;
-    my $var = shift;
-    my $ip_olt = unpack("N",pack("C4",split(/\./,$ip)));
-    if ($var eq "edit-address"){
-        print qq'
-        <form method="post" action="onu.cgi?$ip&$onu">
-            Редактировать адрес: 
-            <input type="name" name="edit_address" required placeholder="Адрес">
-            <input type="submit" value="Отправить" >
-        </form>';
+        print "<td><font color=\"blue\">", $ref->{'address'},"</font><br><small>",$ref->{'serial'},"</small></td>";
+        print "</tr>"; 
     }
-    if ($var eq "edit-serial"){
-        print qq'
-        <form method="post" action="onu.cgi?$ip&$onu">
-            Редактировать серийный номер: 
-            <input type="name" name="edit_serial" required placeholder="Номер">
-            <input type="submit" value="Отправить" >
-        </form>';
-    }
-    if ($cgi->param('edit_address')){
-        my $edit_param = $cgi->param('edit_address');
-        $dbh->do("UPDATE olt_$ip_olt SET address=? WHERE number=?", undef, $edit_param, $onu);
-    }
-    if ($cgi->param('edit_serial')){
-        my $edit_param = $cgi->param('edit_serial');
-        $dbh->do("UPDATE olt_$ip_olt SET serial=? WHERE number=?", undef, $edit_param, $onu);
-    }
+    print qq'</table>';
 }
 
 $sth->finish;    
-$dbh->disconnect;
+$dbc->disconnect;
