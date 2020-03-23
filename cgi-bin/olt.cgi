@@ -32,7 +32,7 @@ olt($olt_ip[0]);
 sub olt($) {
     my $x = shift;
     my $ip = unpack("N",pack("C4",split(/\./,$x)));
-    $sth = $dbc->prepare("select number, sugnal, mac, address from olt_$ip order by number;");
+    $sth = $dbc->prepare("select number, sugnal, mac, address, serial from olt_$ip order by number;");
     $sth->execute;
     print "<h3 align=\"center\">$x</h3>";
     print qq'
@@ -58,7 +58,7 @@ sub olt($) {
                 print "<td><font color=\"red\">", $signal,"</font></td>"; 
             }
         }
-        print "<td><font color=\"blue\">", $ref->{'address'},"</font><br><small></small></td>";
+        print "<td><font color=\"blue\">", $ref->{'address'},"</font><br><small>",$ref->{'serial'},"</small></td>";
         print "</tr>"; 
     }
     print qq'</table>';
