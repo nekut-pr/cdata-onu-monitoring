@@ -33,3 +33,4 @@ Alias /cdata/ "/var/www/cdata/"
 ```
 CREATE TABLE olt(ip int(16) unsigned, name varchar(60));
 ```
+![image alt text](https://www.youtube.com/watch?v=TDsZvjGFlAk)
