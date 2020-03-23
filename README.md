@@ -33,4 +33,6 @@ Alias /cdata/ "/var/www/cdata/"
 ```
 CREATE TABLE olt(ip int(16) unsigned, name varchar(60));
 ```
+Видео
+===========
 [![Cdata Onu Monitoring](https://prm.ua/wp-content/uploads/2019/04/dc1275f0-282f-11e9-82da-d9da8d55b88b-1024x683.jpeg)](https://www.youtube.com/watch?v=EVFTpBVuCdQ)
