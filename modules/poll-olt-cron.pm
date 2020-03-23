@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-use warnings;
+#use warnings;
 use strict;
 use DBI;
 use utf8;
@@ -14,10 +14,10 @@ my %OID = (
 my $source = "DBI:mysql:cdata:localhost";
 my $username = "cdata";
 my $password = "cdata";
-my $dbc = DBI->connect($source, $username, $password, {mysql_enable_utf8 => 1});
-$dbc->do("set names utf8");
+my $dbh = DBI->connect($source, $username, $password, {mysql_enable_utf8 => 1});
+$dbh->do("set names utf8");
 
-my $sth = $dbc->prepare("SELECT ip FROM olt;");
+my $sth = $dbh->prepare("SELECT ip FROM olt;");
 $sth->execute;
 
 while (my $ref = $sth->fetchrow_hashref()) {
@@ -95,14 +95,10 @@ sub refresh {
 
     my $port =  $h{port};
     my $signal =  $h{signal};
-    my $sth = $dbc->prepare("SELECT Count(number) FROM olt_$ip WHERE number = '$port'");
-    $sth->execute;
-    while (my $ref = $sth->fetchrow_hashref()) {    
-        if ($ref->{'Count(number)'} > 0){
-            print $signal;
-            my $sth = $dbc->prepare("UPDATE olt_$ip SET sugnal='$signal' WHERE number=$port;");
-            $sth->execute;
-        }    
+    my $olt_count = $dbh->selectrow_array("SELECT Count(number) FROM olt_$ip WHERE number = ?", undef,  $port) ;
+    if ($olt_count > 0) {
+        $dbh->do("UPDATE olt_$ip SET sugnal=? WHERE number=?", undef, $signal, $port) ;
+        print "update $port\n";
     }
 }
 
@@ -116,17 +112,13 @@ sub add {
     my $signal_port =  $h{signal_port};
     my $signal =  $h{signal};
 
-    my $sth = $dbc->prepare("SELECT Count(number) FROM olt_$ip WHERE number = '$mac_port'");
-    $sth->execute;
-    while (my $ref = $sth->fetchrow_hashref()) {    
-        unless ($ref->{'Count(number)'} > 0){
-            my $sth = $dbc->prepare("INSERT INTO olt_$ip VALUES($mac_port, '$signal', '$mac', '','','');");
-            $sth->execute; 
-        }
+my $olt_count =
+      $dbh->selectrow_array("SELECT Count(number) FROM olt_$ip WHERE number = ?", undef, $mac_port);
+    unless ($olt_count > 0) {
+        $dbh->do("INSERT INTO olt_$ip VALUES(?, ?, ?, '','','');", undef, $mac_port, $signal, $mac);
     }
 }
-
 $sth->finish;    
-$dbc->disconnect;
+$dbh->disconnect;
 
 1;
