@@ -30,10 +30,11 @@ Alias /cdata/ "/var/www/cdata/"
        AllowOverride All
 </Directory>
 ```
-Создать таблицу свитчей Cdata
+Настройка Mysql
 ===========
 ```
 CREATE TABLE olt(ip int(16) unsigned, name varchar(60));
+CREATE USER 'cdata'@'localhost' IDENTIFIED BY 'cdata';
 ```
 Видео
 ===========
