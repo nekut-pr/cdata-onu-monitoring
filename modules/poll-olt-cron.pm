@@ -6,7 +6,6 @@ use strict;
 use Socket;
 use DBI;
 
-use Data::Dumper;
 binmode(STDOUT, ':utf8');
 
 my %OID = (
@@ -29,7 +28,7 @@ my $dbh      = DBI->connect(
 
 $dbh->do("set names utf8");
 
-my $ips = $dbh->selectcol_arrayref("select ip from olt");
+my $ips = $dbh->selectcol_arrayref("select ip from olt order by ip");
 
 for my $ip_address (@$ips) {
 
