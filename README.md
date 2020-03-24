@@ -35,6 +35,8 @@ Alias /cdata/ "/var/www/cdata/"
 ```
 CREATE TABLE olt(ip int(16) unsigned, name varchar(60));
 CREATE USER 'cdata'@'localhost' IDENTIFIED BY 'cdata';
+GRANT ALL PRIVILEGES ON * . * TO 'cdata'@'localhost';
+FLUSH PRIVILEGES;
 ```
 Видео
 ===========
