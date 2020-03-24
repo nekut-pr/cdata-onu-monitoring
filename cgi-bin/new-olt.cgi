@@ -36,8 +36,8 @@ if ($cgi->param('ip')){
 
     $dbh->do("INSERT INTO olt VALUES($ip_olt, '$name');"); 
     my $sth = $dbh->prepare("CREATE TABLE olt_$ip_olt (
-        number      int(11) ,
-        sugnal      int(11) ,
+        number      int(11),
+        sugnal      FLOAT ,
         mac         varchar(50),
         address     varchar(50),
         voltage     int(11) ,
