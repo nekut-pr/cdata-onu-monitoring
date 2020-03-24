@@ -90,13 +90,12 @@ sub mysql {
         signal => '1.3.6.1.4.1.17409.2.3.4.2.1.4'
     );
     
-    my $ips = $dbh->selectcol_arrayref("select ip from olt");
     
-    for my $ip_address (@$ips) {
-        my $ip_address_conver = unpack "N", inet_aton($ip_address);
+    for ($ip_address) {
+        my $ip_address_conver = unpack "N", inet_aton($_);
 
-        my $snmp_mac    = `snmpwalk -v2c -c public $ip_address $OID{mac}`;
-        my $snmp_signal = `snmpwalk -v2c -c public $ip_address $OID{signal}`;
+        my $snmp_mac    = `snmpwalk -v2c -c public $_ $OID{mac}`;
+        my $snmp_signal = `snmpwalk -v2c -c public $_ $OID{signal}`;
 
         my %ports =
         map {
@@ -111,6 +110,7 @@ sub mysql {
             $ports{$1}{signal} = sprintf("%.1f", $2 / 100);
         }
     }
+
     for my $port (keys %ports) {
         if (exists $ports{$port}{signal}) {
             my $updated =
