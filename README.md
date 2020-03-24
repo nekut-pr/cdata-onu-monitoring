@@ -30,6 +30,13 @@ Alias /cdata/ "/var/www/cdata/"
        AllowOverride All
 </Directory>
 ```
+Настройки Perl
+===========
+```
+perl -MCPAN -e 'install CGI'
+perl -MCPAN -e 'install DBI'
+```
+
 Настройка Mysql
 ===========
 ```
