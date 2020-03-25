@@ -44,14 +44,17 @@ sub olt($) {
         }
         my $signal = $ref->{'sugnal'};
         for ($signal){
-            if ($_ >= -24.9 && $_ <= -10){
-                print "<td><font color=\"green\">", $signal,"</font></td>"; 
+            if ($_ >= -24.9 && $_ <= -8){
+                print "<td><font color=\"green\">", $signal,"</font></td>";
             }
             elsif ($_ >= -26 && $_ <= -25){
                 print "<td><font color=\"#ff8000\">", $signal,"</font></td>"; 
             }
-            elsif ($_ >= -27){
-                print "<td><font color=\"red\">", $signal,"</font></td>"; 
+            elsif ($_ == ''){
+                print "<td><font color=\"red\">Offline</font></td>";
+            }
+            else {
+                print "<td><font color=\"red\">", $signal,"</font></td>";
             }
         }
         print "<td>", $ref->{'mac'},"</td>"; 
@@ -112,6 +115,7 @@ sub edit_address($) {
 }
 
 sub refresh($){
+    use POSIX;
     my ($ip, $port) = @_;
     my $snmp_signal = `snmpwalk -v2c -c public $ip 1.3.6.1.4.1.17409.2.3.4.2.1.4 | grep $port`;
     my @signal = split(/\s/, $snmp_signal);
