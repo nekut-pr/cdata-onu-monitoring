@@ -30,8 +30,7 @@ my @olt_ip = split( /\&/, $ENV{'QUERY_STRING'});
 olt($olt_ip[0], $olt_ip[1]);
 
 sub olt($) {
-    my $x = shift;
-    my $y = shift;
+    my ($x, $y) = @_;
     my $ip = unpack("N",pack("C4",split(/\./,$x)));
     $sth = $dbh->prepare("SELECT number, sugnal, mac, address, voltage, serial  FROM olt_$ip WHERE number=$y;");
     $sth->execute;
@@ -69,17 +68,22 @@ sub olt($) {
             <span style=\"font-size: 15px;\">
                 <a href=\"onu.cgi?$x&$y&edit-serial\">Изменить</a>
             </span>
-        </td>";                
-    }   
+        </td>";  
+        print qq'<td>
+            <FORM action="#" METHOD="POST">
+                <BUTTON name="ref" type="Submit" value="Сигнал"><img src="../images/icon-refresh.png" width="40" height="40" ></BUTTON>
+            </td>'; 
+        if ($cgi->param('ref')){
+            refresh($ip, $port);
+        }   
+    }
 }
 
 my @edit = split( /\&/, $ENV{'QUERY_STRING'});
 edit_address($edit[0], $edit[1], $edit[2]);
 
 sub edit_address($) {
-    my $ip = shift;
-    my $onu = shift;
-    my $var = shift;
+    my ($ip, $onu, $var) = @_;
     my $ip_olt = unpack("N",pack("C4",split(/\./,$ip)));
     if ($var eq "edit-address"){
         print qq'
@@ -105,6 +109,14 @@ sub edit_address($) {
         my $edit_param = $cgi->param('edit_serial');
         $dbh->do("UPDATE olt_$ip_olt SET serial=? WHERE number=?", undef, $edit_param, $onu);
     }
+}
+
+sub refresh($){
+    my ($ip, $port) = @_;
+    my $snmp_signal = `snmpwalk -v2c -c public $ip 1.3.6.1.4.1.17409.2.3.4.2.1.4 | grep $port`;
+    my @signal = split(/\s/, $snmp_signal);
+    my $str = sprintf("%.1f",  $signal[3] / 100);
+    $dbh->do("UPDATE olt_$ip SET sugnal=? WHERE number=?", undef, $str, $port);
 }
 
 $sth->finish;    
