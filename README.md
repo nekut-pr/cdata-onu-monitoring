@@ -36,7 +36,11 @@ Alias /cdata/ "/var/www/cdata/"
 perl -MCPAN -e 'install CGI'
 perl -MCPAN -e 'install DBI'
 ```
-
+#### Cron
+```
+nano /etc/crontab
+*/5 *    * * *   root    perl /var/www/cdata/modules/poll-olt-cron.pm
+```
 #### Mysql
 
 ```
