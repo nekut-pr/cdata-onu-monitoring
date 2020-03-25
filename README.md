@@ -1,7 +1,8 @@
 По всем вопросам - https://t.me/nekut_pr
 
-Настройки Apache
-===========
+Настройки
+-----------
+#### Настройка Apache2
 ```
 Alias /cdata/ "/var/www/cdata/"
 <Directory "/var/www/cdata">
@@ -30,21 +31,20 @@ Alias /cdata/ "/var/www/cdata/"
        AllowOverride All
 </Directory>
 ```
-Настройки Perl
-===========
+#### Perl (уставнока модулей)
 ```
 perl -MCPAN -e 'install CGI'
 perl -MCPAN -e 'install DBI'
 ```
 
-Настройка Mysql
-===========
+#### Mysql
+
 ```
 CREATE TABLE olt(ip int(16) unsigned, name varchar(60));
 CREATE USER 'cdata'@'localhost' IDENTIFIED BY 'cdata';
 GRANT ALL PRIVILEGES ON * . * TO 'cdata'@'localhost';
 FLUSH PRIVILEGES;
 ```
-Видео
-===========
+#### Видео
+
 [![Cdata Onu Monitoring](https://prm.ua/wp-content/uploads/2019/04/dc1275f0-282f-11e9-82da-d9da8d55b88b-1024x683.jpeg)](https://www.youtube.com/watch?v=6XcBKonYYc0&feature=youtu.be)
