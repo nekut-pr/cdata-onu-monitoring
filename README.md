@@ -29,9 +29,12 @@ nano /etc/crontab
 */5 *    * * *   root    perl /var/www/cdata/modules/poll-olt-cron.pm
 ```
 #### Mysql
-
+- Создание таблицы свитчей.
 ```
 CREATE TABLE olt(ip int(16) unsigned, name varchar(60));
+```
+- Создание пользователя.
+```
 CREATE USER 'cdata'@'localhost' IDENTIFIED BY 'cdata';
 GRANT ALL PRIVILEGES ON * . * TO 'cdata'@'localhost';
 FLUSH PRIVILEGES;
