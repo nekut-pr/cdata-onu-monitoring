@@ -6,7 +6,7 @@ use DBI;
 use utf8;
 binmode(STDOUT,':utf8');
 use POSIX;
-
+my $sth;
 my $cgi = new CGI; 
 my $source = "DBI:mysql:cdata:localhost";
 my $username = "cdata";
@@ -25,16 +25,15 @@ print $cgi->start_html(
 
 print qq'<div class="block-round-content"><a href="index.cgi">Панель управления Cdata</a></div>';
 
-my $sth;
 my @olt_ip = split( /\&/, $ENV{'QUERY_STRING'});
 olt($olt_ip[0], $olt_ip[1]);
 
 sub olt($) {
     my ($x, $y) = @_;
     my $ip = unpack("N",pack("C4",split(/\./,$x)));
-    $sth = $dbh->prepare("SELECT number, sugnal, mac, address, voltage, serial  FROM olt_$ip WHERE number=$y;");
+    $sth = $dbh->prepare("SELECT number, sugnal, mac, address, zone, serial FROM olt_$ip WHERE number=$y;");
     $sth->execute;
-    print qq'<table border=1><tr><th>Ветка/Порт</th><th>Сигнал</th><th>MAC</th><th>Адрес</th><th>Серийный номер</th></tr>';
+    print qq'<table border=1><tr><th>Ветка/Порт</th><th>Сигнал</th><th>MAC</th><th>Адрес</th><th>Район</th><th>Серийный номер</th></tr>';
     while (my $ref = $sth->fetchrow_hashref()) {
         print "<tr>";
         my $port = $ref->{'number'};
@@ -66,6 +65,12 @@ sub olt($) {
             </span>
         </td>"; 
         print
+        "<td>", $ref->{'zone'}, 
+        "<span style=\"font-size: 15px;\">
+                <a href=\"onu.cgi?$x&$y&edit-areas\">Изменить</a>
+            </span>
+        </td>"; 
+        print
         "<td>", 
             $ref->{'serial'},"<br>
             <span style=\"font-size: 15px;\">
@@ -73,12 +78,13 @@ sub olt($) {
             </span>
         </td>";  
         print qq'<td>
-            <FORM action="#" METHOD="POST">
-                <BUTTON name="ref" type="Submit" value="Сигнал"><img src="../images/icon-refresh.png" width="40" height="40" ></BUTTON>
+           <FORM action="" METHOD="POST">
+                <BUTTON name="ref" type="Submit" value="Сигнал"><img src="../images/icon-refresh.png" width="40" height="40" onclick="history.back();" onclick="window.location.reload()"></BUTTON>
+           </FORM>
             </td>'; 
         if ($cgi->param('ref')){
             refresh($ip, $port);
-        }   
+        }
     }
 }
 
@@ -104,6 +110,9 @@ sub edit_address($) {
             <input type="submit" value="Отправить" >
         </form>';
     }
+    if ($var eq "edit-areas"){
+        areas($onu);
+    }
     if ($cgi->param('edit_address')){
         my $edit_param = $cgi->param('edit_address');
         $dbh->do("UPDATE olt_$ip_olt SET address=? WHERE number=?", undef, $edit_param, $onu);
@@ -115,12 +124,27 @@ sub edit_address($) {
 }
 
 sub refresh($){
-    use POSIX;
     my ($ip, $port) = @_;
     my $snmp_signal = `snmpwalk -v2c -c public $ip 1.3.6.1.4.1.17409.2.3.4.2.1.4 | grep $port`;
     my @signal = split(/\s/, $snmp_signal);
     my $str = sprintf("%.1f",  $signal[3] / 100);
     $dbh->do("UPDATE olt_$ip SET sugnal=? WHERE number=?", undef, $str, $port);
+}
+
+sub areas($) {
+    my ($port) = @_;
+    $sth = $dbh->prepare("select value, name from areas");
+    $sth->execute;
+    my $select = $cgi->param('pon');  
+    print qq'<form method="post" action="#"><select name="pon" >';
+    while (my $ref = $sth->fetchrow_hashref()) {
+        my $value = $ref->{'value'};
+        my $name = $ref->{'name'};
+        print qq'<option value="$value">$name</option>';
+    }
+    print qq'</select><input type="submit" value="изменить"></form>';
+    unless ($select eq "") {
+    }
 }
 
 $sth->finish;    
