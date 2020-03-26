@@ -31,7 +31,7 @@ nano /etc/crontab
 #### Mysql
 - Создание таблицы свитчей.
 ```
-CREATE TABLE olt(ip int(16) unsigned, name varchar(60));
+CREATE TABLE olt(ip int(16) unsigned, name varchar(100));
 ```
 - Создание пользователя.
 ```
