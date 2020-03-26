@@ -31,7 +31,7 @@ olt($olt_ip[0], $olt_ip[1]);
 sub olt($) {
     my ($x, $y) = @_;
     my $ip = unpack("N",pack("C4",split(/\./,$x)));
-    $sth = $dbh->prepare("SELECT number, sugnal, mac, address, zone, serial FROM olt_$ip WHERE number=$y;");
+    $sth = $dbh->prepare("SELECT number, sugnal, mac, address, areas, serial FROM olt_$ip WHERE number=$y;");
     $sth->execute;
     print qq'<table border=1><tr><th>Ветка/Порт</th><th>Сигнал</th><th>MAC</th><th>Адрес</th><th>Район</th><th>Серийный номер</th></tr>';
     while (my $ref = $sth->fetchrow_hashref()) {
