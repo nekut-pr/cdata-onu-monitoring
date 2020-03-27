@@ -31,7 +31,7 @@ olt($olt_ip[0], $olt_ip[1]);
 sub olt($) {
     my ($x, $y) = @_;
     my $ip = unpack("N",pack("C4",split(/\./,$x)));
-    $sth = $dbh->prepare("SELECT number, sugnal, mac, address, areas, serial FROM olt_$ip WHERE number=$y;");
+    $sth = $dbh->prepare("SELECT number, sugnal, mac, address, area, serial FROM olt_$ip WHERE number=$y;");
     $sth->execute;
     print qq'<table border=1><tr><th>Ветка/Порт</th><th>Сигнал</th><th>MAC</th><th>Адрес</th><th>Район</th><th>Серийный номер</th></tr>';
     while (my $ref = $sth->fetchrow_hashref()) {
@@ -65,8 +65,8 @@ sub olt($) {
             </span>
         </td>"; 
         print
-        "<td>", $ref->{'zone'}, 
-        "<span style=\"font-size: 15px;\">
+        "<td>", $ref->{'area'}, "<br>
+        <span style=\"font-size: 15px;\">
                 <a href=\"onu.cgi?$x&$y&edit-areas\">Изменить</a>
             </span>
         </td>"; 
@@ -111,7 +111,7 @@ sub edit_address($) {
         </form>';
     }
     if ($var eq "edit-areas"){
-        areas($onu);
+        areas($ip_olt, $onu);
     }
     if ($cgi->param('edit_address')){
         my $edit_param = $cgi->param('edit_address');
@@ -132,18 +132,18 @@ sub refresh($){
 }
 
 sub areas($) {
-    my ($port) = @_;
-    $sth = $dbh->prepare("select value, name from areas");
+    my ($ip, $port) = @_;
+    $sth = $dbh->prepare("select name from areas");
     $sth->execute;
     my $select = $cgi->param('pon');  
     print qq'<form method="post" action="#"><select name="pon" >';
     while (my $ref = $sth->fetchrow_hashref()) {
-        my $value = $ref->{'value'};
         my $name = $ref->{'name'};
-        print qq'<option value="$value">$name</option>';
+        print qq'<option value="$name">$name</option>';
     }
     print qq'</select><input type="submit" value="изменить"></form>';
     unless ($select eq "") {
+        $dbh->do("UPDATE olt_$ip SET area=? WHERE number=?", undef, $select, $port);
     }
 }
 
