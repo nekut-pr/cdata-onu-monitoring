@@ -32,6 +32,10 @@ nano /etc/crontab
 ```
 CREATE TABLE olt(ip int(16) unsigned, name varchar(100));
 ```
+- Создать таблицу районов
+```
+CREATE TABLE areas(name VARCHAR (100));
+```
 - Создание пользователя.
 ```
 CREATE USER 'cdata'@'localhost' IDENTIFIED BY 'cdata';
