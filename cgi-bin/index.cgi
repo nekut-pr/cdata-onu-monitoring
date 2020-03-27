@@ -40,7 +40,7 @@ sub index {
     }
     print qq'</table>';
 }
-print qq'<p><a href="new-olt.cgi">Добавить новый OLT</a></p>';
+print qq'<p><a href="add.cgi">Добавить новый OLT</a></p>';
 
 $sth->finish;
 $dbc->disconnect;
