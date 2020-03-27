@@ -40,7 +40,7 @@ if ($cgi->param('ip')){
         sugnal      FLOAT ,
         mac         varchar(50),
         address     varchar(50),
-        areas       varchar(50) ,
+        area        varchar(50) ,
         serial      varchar(100) 
     );");
     $sth->execute;
