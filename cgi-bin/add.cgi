@@ -23,7 +23,7 @@ print $cgi->start_html(
 );
 
 print qq'
-    <form method="post" action="/cdata/cgi-bin/new-olt.cgi" > 
+    <form method="post" action="/cdata/cgi-bin/add.cgi" > 
         <input type="name" name="ip" required placeholder="IP" >
         <input type="name" name="name" required placeholder="Имя" >
         <input type="submit" value="Отправить" >
