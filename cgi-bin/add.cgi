@@ -33,9 +33,8 @@ if ($cgi->param('ip')){
     my $ip = $cgi->param('ip');
     my $name = $cgi->param('name');
     my $ip_olt = unpack("N",pack("C4",split(/\./,$ip)));
-
     $dbh->do("INSERT INTO olt VALUES($ip_olt, '$name');"); 
-    my $sth = $dbh->prepare("CREATE TABLE olt_$ip_olt (
+    $dbh->do("CREATE TABLE olt_$ip_olt (
         number      int(11),
         sugnal      FLOAT ,
         mac         varchar(50),
@@ -43,5 +42,4 @@ if ($cgi->param('ip')){
         area        varchar(50) ,
         serial      varchar(100) 
     );");
-    $sth->execute;
 }
