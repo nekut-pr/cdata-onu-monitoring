@@ -23,10 +23,16 @@ print $cgi->start_html(
 );
 
 print qq'
-    <form method="post" action="/cdata/cgi-bin/add.cgi" > 
+    <form method="post" action="/cdata/cgi-bin/add.cgi" > Новый OLT --- 
         <input type="name" name="ip" required placeholder="IP" >
         <input type="name" name="name" required placeholder="Имя" >
-        <input type="submit" value="Отправить" >
+        <input type="submit" value="Добавить" >
+    </form>';
+
+print qq'
+    <form method="post" action="/cdata/cgi-bin/add.cgi" > Новый район - 
+        <input type="name" name="area" required placeholder="Район" >
+        <input type="submit" value="Добавить" >
     </form>';
 
 if ($cgi->param('ip')){
@@ -42,4 +48,7 @@ if ($cgi->param('ip')){
         area        varchar(50) ,
         serial      varchar(100) 
     );");
+} elsif ($cgi->param('area')){
+    my $area = $cgi->param('area');
+    $dbh->do("INSERT INTO areas VALUES('$area');"); 
 }
