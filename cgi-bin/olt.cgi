@@ -37,20 +37,30 @@ print $cgi->start_html(
 print qq'<div class="block-round-content"><a href="index.cgi">Панель управления Cdata</a> </div>';
 my $sth;
 my @olt_ip = split( /\&/, $ENV{'QUERY_STRING'});
+
 olt($olt_ip[0]);
 
 sub olt($) {
     my $x = shift;
     my $ip = unpack("N",pack("C4",split(/\./,$x)));
+
     if ($cgi->param('sort')){
-        $sth = $dbh->prepare("select number, sugnal, mac, address, serial from olt_$ip order by address;");
+        $sth = $dbh->prepare("select number, sugnal, mac, address, serial, area from olt_$ip order by address;");
         $sth->execute;
-    } else {
-        $sth = $dbh->prepare("select number, sugnal, mac, address, serial from olt_$ip order by number;");
+    }    
+    elsif ($cgi->param('area')){
+       area($ip); 
+    }
+    else {
+        $sth = $dbh->prepare("select number, sugnal, mac, address, serial, area from olt_$ip order by number;");
         $sth->execute;
     }    
     print "<h3 align=\"center\">$x</h3>";
-    print qq'<center><FORM action="olt.cgi?$x" METHOD="POST"><INPUT name="edit" type="Submit" value="ОПРОСИТЬ OLT"><INPUT name="sort" type="Submit" value="Сортировка А-Я"></FORM></center><br>';
+    print qq'<center><FORM action="olt.cgi?$x" METHOD="POST">
+        <INPUT name="edit" type="Submit" value="Опросить OLT">
+        <INPUT name="sort" type="Submit" value="Сортировка А-Я">
+        <INPUT name="area" type="Submit" value="Сортировка по району">'; 
+    print qq'</FORM></center><br>';
     print qq'
     <table border="1"><th>Номер порта</th><th>MAC</th><th>Сигнал</th><th>Описание</th><tr></tr>';
     while (my $ref = $sth->fetchrow_hashref()) {
@@ -77,13 +87,29 @@ sub olt($) {
                 print "<td><font color=\"red\">", $signal,"</font></td>";
             }
         }
-        print "<td><font color=\"blue\">", $ref->{'address'},"</font><br><small>",$ref->{'serial'},"</small></td>";
+        print "<td><font color=\"blue\">", $ref->{'address'},"</font><br><small>",$ref->{'serial'},"</small><br><small>",$ref->{'area'},"</small></td>";
         print "</tr>"; 
     }
     print qq'</table>';
     if ($cgi->param('edit')){
        mysql($x); 
+    } 
+}
+sub area($) {
+    my ($ip) = @_;
+    $sth = $dbh->prepare("select name from areas;");
+    $sth->execute;
+    my $select = $cgi->param('area');  
+    print qq'<form method="post" action="">Выберите район: <select name="area" >';
+    while (my $ref = $sth->fetchrow_hashref()) {
+        my $name = $ref->{'name'};
+        print qq'<option value="$name">$name</option>';
     }
+    print qq'</select><input type="submit" value="Выбрать"></form>';
+    unless ($select eq "") {
+        $sth = $dbh->prepare("SELECT number, sugnal, mac, address, area, serial FROM olt_$ip WHERE area RLIKE '$select' ORDER BY number;");
+        $sth->execute;    
+    } 
 }
 
 sub mysql {
@@ -93,7 +119,6 @@ sub mysql {
         mac    => '1.3.6.1.4.1.17409.2.3.4.1.1.7',
         signal => '1.3.6.1.4.1.17409.2.3.4.2.1.4'
     );
-    
     
     for ($ip_address) {
         my $ip_address_conver = unpack "N", inet_aton($_);
@@ -140,6 +165,5 @@ sub mysql {
     }
 }
 }
-
 $sth->finish;    
 $dbh->disconnect;
