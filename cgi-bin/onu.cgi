@@ -33,6 +33,7 @@ sub olt($) {
     my $ip = unpack("N",pack("C4",split(/\./,$x)));
     $sth = $dbh->prepare("SELECT number, sugnal, mac, address, area, serial FROM olt_$ip WHERE number=$y;");
     $sth->execute;
+    print qq'<center><FORM action="olt.cgi?$x" METHOD="POST"><INPUT name="back" type="Submit" value="Назад на OLT"></center></form><br>';         
     print qq'<table border=1><tr><th>Ветка/Порт</th><th>Сигнал</th><th>MAC</th><th>Адрес</th><th>Район</th><th>Серийный номер</th></tr>';
     while (my $ref = $sth->fetchrow_hashref()) {
         print "<tr>";
