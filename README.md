@@ -28,6 +28,11 @@ apt-get install perl
 perl -MCPAN -e 'install CGI'
 perl -MCPAN -e 'install DBI'
 ```
+#### Права на файлы
+```
+chmod -R  777 /var/www/cdata/cgi-bin/
+chmod -R  777 /var/www/cdata/modules/
+```
 #### Cron (опрос cdata каждые 5 минут)
 ```
 nano /etc/crontab
