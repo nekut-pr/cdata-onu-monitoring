@@ -18,12 +18,12 @@
 
 Настройки
 -----------
-#### Уставнока Perl
+#### Установка Perl
 ```
 apt-get install perl
 ```
 
-#### Perl (уставнока модулей)
+#### Perl (установка модулей)
 ```
 perl -MCPAN -e 'install CGI'
 perl -MCPAN -e 'install DBI'
@@ -33,10 +33,10 @@ perl -MCPAN -e 'install DBI'
 chmod -R  777 /var/www/cdata/cgi-bin/
 chmod -R  777 /var/www/cdata/modules/
 ```
-#### Cron (опрос cdata каждые 5 минут)
+#### Cron (опрос cdata каждые 10 минут)
 ```
 nano /etc/crontab
-*/5 *    * * *   root    perl /var/www/cdata/modules/poll-olt-cron.pm
+*/10 *    * * *   root    perl /var/www/cdata/modules/poll-olt-cron.pm
 ```
 #### Mysql
 - Создание таблицы свитчей.
