@@ -7,11 +7,21 @@ use utf8;
 binmode(STDOUT,':utf8');
 
 my $cgi = new CGI; 
-my $source = "DBI:mysql:cdata:localhost";
-my $username = "cdata";
-my $password = "cdata";
-my $dbh = DBI->connect($source, $username, $password, {mysql_enable_utf8 => 1});
+
+require "../config.pl";
+
+our %conf;
+
+my $dbh = DBI->connect(
+    "DBI:mysql:" . $conf{dbuser} . ":" . $conf{dbhost}, 
+    $conf{dbuser}, 
+    $conf{dbpasswd}, 
+    {
+        mysql_enable_utf8 => 1
+    }
+);
 $dbh->do("set names utf8");
+
 
 print $cgi->header(
     -charset=>'UTF-8'
