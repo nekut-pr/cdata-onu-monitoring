@@ -13,13 +13,15 @@ my %OID = (
     signal => '1.3.6.1.4.1.17409.2.3.4.2.1.4'
 );
 
-my $source   = "DBI:mysql:cdata:localhost";
-my $username = "cdata";
-my $password = "cdata";
-my $dbh      = DBI->connect(
-    $source,
-    $username,
-    $password, {
+require "../config.pl";
+
+our %conf;
+
+my $dbh = DBI->connect(
+    "DBI:mysql:" . $conf{dbuser} . ":" . $conf{dbhost}, 
+    $conf{dbuser}, 
+    $conf{dbpasswd}, 
+    {
         mysql_enable_utf8       => 1,
         PrintError              => 1,
         mysql_client_found_rows => 1,
