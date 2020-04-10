@@ -10,16 +10,17 @@ binmode(STDOUT,':utf8');
 use POSIX;
 
 my $cgi = new CGI; 
-my $source   = "DBI:mysql:cdata:localhost";
-my $username = "cdata";
-my $password = "cdata";
-my $dbh      = DBI->connect(
-    $source,
-    $username,
-    $password, {
-        mysql_enable_utf8       => 1,
-        PrintError              => 1,
-        mysql_client_found_rows => 1,
+
+require "../config.pl";
+
+our %conf;
+
+my $dbh = DBI->connect(
+    "DBI:mysql:" . $conf{dbuser} . ":" . $conf{dbhost},
+    $conf{dbuser},
+    $conf{dbpasswd},
+    {
+        mysql_enable_utf8 => 1
     }
 );
 
@@ -87,7 +88,7 @@ sub olt($) {
                 print "<td><font color=\"red\">", $signal,"</font></td>";
             }
         }
-        print "<td><font color=\"blue\">", $ref->{'address'},"</font><br><small>",$ref->{'serial'},"</small><br><small>",$ref->{'area'},"</small></td>";
+        print "<td><font color=\"blue\">", $ref->{'address'},"</font><br><small>",$ref->{'area'},"</small><br><small>",$ref->{'serial'},"</small></td>";
         print "</tr>"; 
     }
     print qq'</table>';
@@ -107,7 +108,7 @@ sub area($) {
     }
     print qq'</select><input type="submit" value="Выбрать"></form>';
     unless ($select eq "") {
-        $sth = $dbh->prepare("SELECT number, sugnal, mac, address, area, serial FROM olt_$ip WHERE area RLIKE '$select' ORDER BY number;");
+        $sth = $dbh->prepare("SELECT number, sugnal, mac, address, area, serial FROM olt_$ip WHERE area RLIKE '$select' ORDER BY address;");
         $sth->execute;    
     } 
 }
