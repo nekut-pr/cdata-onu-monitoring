@@ -39,6 +39,13 @@ nano /etc/crontab
 */10 *    * * *   root    perl /var/www/cdata/modules/poll-olt-cron.pm
 ```
 #### Mysql
+- Для ввода данных для подключения к DB используйте файл `config.pl`. Если пользователь и база не создана выполните следующие команды. 
+- Создание пользователя.
+```
+CREATE USER 'cdata'@'localhost' IDENTIFIED BY 'cdata';
+GRANT ALL PRIVILEGES ON * . * TO 'cdata'@'localhost';
+FLUSH PRIVILEGES;
+```
 - Создание таблицы свитчей.
 ```
 CREATE TABLE olt(ip int(16) unsigned, name varchar(100));
@@ -46,12 +53,6 @@ CREATE TABLE olt(ip int(16) unsigned, name varchar(100));
 - Создать таблицу районов.
 ```
 CREATE TABLE areas(name VARCHAR (100));
-```
-- Создание пользователя.
-```
-CREATE USER 'cdata'@'localhost' IDENTIFIED BY 'cdata';
-GRANT ALL PRIVILEGES ON * . * TO 'cdata'@'localhost';
-FLUSH PRIVILEGES;
 ```
 #### Настройка Apache2
 ```
