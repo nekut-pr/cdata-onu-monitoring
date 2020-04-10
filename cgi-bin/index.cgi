@@ -4,13 +4,24 @@ use strict;
 use warnings;
 use DBI;
 use utf8;
+use CGI::Carp qw(fatalsToBrowser);
 binmode(STDOUT,':utf8');
 
 my $cgi = new CGI;
-my $source = "DBI:mysql:cdata:localhost";
-my $username = "cdata";
-my $password = "cdata";
-my $dbc = DBI->connect($source, $username, $password, {mysql_enable_utf8 => 1});
+
+require "../config.pl";
+
+our %conf;
+
+my $dbh = DBI->connect(
+    "DBI:mysql:" . $conf{dbuser} . ":" . $conf{dbhost}, 
+    $conf{dbuser}, 
+    $conf{dbpasswd}, 
+    {
+        mysql_enable_utf8 => 1
+    }
+);
+
 $dbc->do("set names utf8");
 
 my $sth = $dbc->prepare("SELECT INET_NTOA(ip), name FROM olt;");
