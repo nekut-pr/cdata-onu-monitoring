@@ -22,9 +22,9 @@ my $dbh = DBI->connect(
     }
 );
 
-$dbc->do("set names utf8");
+$dbh->do("set names utf8");
 
-my $sth = $dbc->prepare("SELECT INET_NTOA(ip), name FROM olt;");
+my $sth = $dbh->prepare("SELECT INET_NTOA(ip), name FROM olt;");
 $sth->execute;
 
 print $cgi->header(
@@ -54,4 +54,4 @@ sub index {
 print qq'<p><a href="add.cgi">Добавить</a></p>';
 
 $sth->finish;
-$dbc->disconnect;
+$dbh->disconnect;
