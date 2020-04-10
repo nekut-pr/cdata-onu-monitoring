@@ -8,10 +8,19 @@ binmode(STDOUT,':utf8');
 use POSIX;
 my $sth;
 my $cgi = new CGI; 
-my $source = "DBI:mysql:cdata:localhost";
-my $username = "cdata";
-my $password = "cdata";
-my $dbh = DBI->connect($source, $username, $password, {mysql_enable_utf8 => 1});
+require "../config.pl";
+
+our %conf;
+
+my $dbh = DBI->connect(
+    "DBI:mysql:" . $conf{dbuser} . ":" . $conf{dbhost},
+    $conf{dbuser},
+    $conf{dbpasswd},
+    {
+        mysql_enable_utf8 => 1
+    }
+);
+
 $dbh->do("set names utf8");
 
 print $cgi->header(
@@ -33,7 +42,7 @@ sub olt($) {
     my $ip = unpack("N",pack("C4",split(/\./,$x)));
     $sth = $dbh->prepare("SELECT number, sugnal, mac, address, area, serial FROM olt_$ip WHERE number=$y;");
     $sth->execute;
-    print qq'<center><FORM action="olt.cgi?$x" METHOD="POST"><INPUT name="back" type="Submit" value="Назад на OLT"></center></form><br>';         
+    print qq'<center><FORM action="olt.cgi?$x" METHOD="POST"><INPUT name="back" type="Submit" value="Назад на OLT"></center></form><br>';    
     print qq'<table border=1><tr><th>Ветка/Порт</th><th>Сигнал</th><th>MAC</th><th>Адрес</th><th>Район</th><th>Серийный номер</th></tr>';
     while (my $ref = $sth->fetchrow_hashref()) {
         print "<tr>";
