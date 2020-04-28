@@ -66,8 +66,8 @@ Alias /cdata/ "/var/www/cdata/"
 
 <VirtualHost *:80>
         DocumentRoot "/var/www/cdata/"
-        ServerName  cdata.terra-line.org
-        ServerAlias www.cdata.terra-line.org
+        ServerName  cdata.site.org
+        ServerAlias www.cdata.site.org
         ErrorLog ${APACHE_LOG_DIR}/error_cdata.log
         CustomLog ${APACHE_LOG_DIR}/access_cdata.log combined
         Alias /cdata/ "/var/www/cdata/"
